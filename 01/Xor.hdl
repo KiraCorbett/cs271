@@ -6,6 +6,8 @@
 /**
  * Exclusive-or gate:
  * out = not (a == b)
+ * returns 1 when its two inputs have opposing values, and 0 otherwise
+ * Function: if a not equal b, then out=1 else out=0
  */
 
 CHIP Xor {
@@ -13,5 +15,9 @@ CHIP Xor {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    Not(in=a, out=nota);
+    Not(in=b, out=notb);
+    And(a=a, b=notb, out=and1);
+    And(a=nota, b=b, out=and2);
+    Or(a=and1, b=and2, out=out);
 }
