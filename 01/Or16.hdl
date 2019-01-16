@@ -13,5 +13,5 @@ CHIP Or16 {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    Or(a=a[0], b=b[0], out=out[0]);
 }
