@@ -42,5 +42,29 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // handling x cases
+    Mux16(a=x, b=false, sel=zx, out=xMux);
+    Not16(in=xMux, out=notx);
+    Mux16(a=xMux, b=notx, sel=nx, out=xOut);
+
+    // handling y cases
+    Mux16(a=y, b=false, sel=zy, out=yMux);
+    Not16(in=yMux, out=noty);
+    Mux16(a=yMux, b=noty, sel=ny, out=yOut);
+
+    // processing if (f == 0) or (f == 1)
+    And16(a=xOut, b=yOut, out=xandy);
+    Add16(a=xOut, b=yOut, out=xaddy);
+
+    // handling output
+    Mux16(a=xandy, b=xaddy, sel=f, out=xy);
+    Not16(in=xy, out=notxy);
+    Mux16(a=xy, b=notxy, sel=no, out[15]=ng, out[0..7]=low8, out[8..15]=high8, out=out);
+
+    // two 8 ways need to be handled with Or8Way
+    // if out=0, then Or8Way is false
+    Or8Way(in=low8, out=lowOr);
+    Or8Way(in=high8, out=highOr);
+    Not(in=nzero, out=zr);
+    Or(a=lowOr, b=highOr, out=nzero);
 }
