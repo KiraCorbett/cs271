@@ -52,7 +52,7 @@ CHIP ALU {
     Not16(in=yMux, out=noty);
     Mux16(a=yMux, b=noty, sel=ny, out=yOut);
 
-    // processing if (f == 0) or (f == 1)
+    // processing if (f == 0) or (f == 1) either ANDing or ADDing
     And16(a=xOut, b=yOut, out=xandy);
     Add16(a=xOut, b=yOut, out=xaddy);
 
