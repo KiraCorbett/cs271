@@ -16,5 +16,15 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
-    // Put your code here:
+    // Increment integers
+    Inc16(in=feedback, out=incOut);
+
+    // Run through combinational logic to assess which 
+    // integer will get incremented
+    Mux16(a=in, b=incOut, sel=inc, out=w0);
+    Mux16(a=w0, b=in, sel=load, out=w1);
+    Mux16(a=w1, b=false, sel=reset, out=outMux);
+
+    // Sequential logic to loop feedback through
+    Register(in=outMux, load=true, out=feedback, out=out);
 }
