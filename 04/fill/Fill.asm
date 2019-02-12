@@ -47,8 +47,8 @@
 	A=M
 	M=-1
     
-    // increment current pixel and reduce remaining pixels 
-    @current
+	// increment current pixel and reduce remaining pixels
+	@current
     D=M+1
 	M=D
 	@KBD
