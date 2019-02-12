@@ -36,9 +36,9 @@ M=0
 	@R2
 	M=D+M
 	@LOOP
-	0;JMP
+	0;JMP // Goto LOOP
 
-//Finish
+
 (END)
-@END
-0;JMP
+	@END
+	0;JMP // infinite loop "terminates" execution of program

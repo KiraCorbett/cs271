@@ -11,4 +11,53 @@
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
 
-// Put your code here.
+
+(START)
+	@SCREEN
+	D=A
+	@current // current var for pixel
+	M=D
+
+(KEYBOARD)
+	@KBD
+	D=M
+	@WHITE
+	D;JEQ	// if == 0, jump to white
+	@BLACK
+	D;JGT	// if > 0, jump to black
+
+(WHITE)
+	// draw white pixels
+ 	@current
+	A=M
+	M=0
+
+	// increment current pixel and reduce remaining pixels 
+	@current
+	D=M+1
+	M=D
+	@KBD
+	D=A-D
+	@END
+	0;JMP
+
+(BLACK)
+	// draw black pixels
+	@current
+	A=M
+	M=-1
+    
+    // increment current pixel and reduce remaining pixels 
+    @current
+    D=M+1
+	M=D
+	@KBD
+	D=A-D
+	@END
+	0;JMP
+
+(END)
+	@START
+	D;JEQ	// return to start if > 0
+	@KEYBOARD
+	D;JGT	// else return to drawing black
