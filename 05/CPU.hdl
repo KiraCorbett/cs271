@@ -49,50 +49,43 @@ CHIP CPU {
     // instruction[3..5]: d1=3, d2=4, d1=5
     // instruction[6..11]: c6=6, c5=7, c4=8, c3=9, c2=10, c1=11
 
+    // ===============================================================================
 
     PARTS:
-    // control signals to indicate if an A or C instruction is being executed
-    // 0 for A-instruction, 1 for C-instruction
+    // control signals if an A (0) or C (1) instruction is being executed
     Not(in=instruction[15], out=aInstruction);
     Not(in=aInstruction, out=cInstruction);
 
     // A-REGISTER
     // if A-instructions OR C-instructions with d1 bit, load A register
-    And(a=cInstruction, b=instruction[4], out=outAinst);
     Or(a=aInstruction, b=instruction[5], out=loadA);
-
     Mux16(a=ALUout, b=instruction, sel=aInstruction, out=MuxI);
     ARegister(in=MuxI, load=loadA, out=outA, out[0..14]=addressM);
 
     // D-REGISTER
-    And(a=instruction[15], b=instruction[4], out=loadD);
+    And(a=instruction[15], b=instruction[4], out=loadD); // c-instruction + d2 bit, load D register
     DRegister(in=ALUout, load=loadD, out=outD);
 
     // ALU
     Mux16(a=outA, b=inM, sel=instruction[12], out=MuxAorM);
     ALU(x=outD, y=MuxAorM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], zr=zero, ng=negative, out=ALUout, out=outM);
 
-    // checks for ALU flags by handling the jumps
+    // writeM
+    And(a=instruction[15], b=instruction[3], out=writeM); // cInstruction and d1 bit
+
+    // checks ALU flags
     Not(in=negative, out=notNegative);
     Not(in=zero, out=notZero);
     And(a=notZero, b=notNegative, out=positive);
 
-    And(a=instruction[0], b=positive, out=greaterZero); // out>0/j0 bit
-    And(a=instruction[1], b=zero, out=zeroFlag);    // zero AND out=0/j2 bit
-    And(a=instruction[2], b=negative, out=negativeFlag);    // negative AND out<0/j1 bit
+    // checks jump cases
+    And(a=instruction[0], b=positive, out=JGT); // out>0 AND j0 bit
+    And(a=instruction[1], b=zero, out=JEQ);    // out=0 AND j2 bit
+    And(a=instruction[2], b=negative, out=JLT);    // out<0 AND j1 bit
 
-    Or8Way(in[0]=greaterZero, in[1]=zeroFlag, in[2]=negativeFlag, out=jumper);
-    And(a=jumper, b=cInstruction, out=jump);
-
-    //Or(a=zeroFlag, b=negativeFlag, out=jmp1);
-    //Or(a=jmp1, b=greaterZero, out=jmp2);
-    //And(a=cInstruction, b=jmp2, out=jump);
-    
-    // writeM
-    And(a=instruction[15], b=instruction[3], out=writeM); // cInstruction and d1 bit
-
-    // outM
-    //And16(a=ALUout, b=true, out=outM);
+    Or(a=JEQ, b=JLT, out=jmp1);
+    Or(a=jmp1, b=JGT, out=jmp2);
+    And(a=cInstruction, b=jmp2, out=jump);
 
     // PC
     PC(in=outA, load=jump, inc=true, reset=reset, out[0..14]=pc);
