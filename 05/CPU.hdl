@@ -38,6 +38,62 @@ CHIP CPU {
         addressM[15],    // Address in data memory (of M)
         pc[15];          // address of next instruction
 
+    // 16-bit word in CPU instruction represent an A-instruction or a C-instruction
+    // i-bit codes the instruction type (0 for A-instruction, 1 for a C-instruction)
+    // In C-instruction, a-bit and c-bits code comp part and d-bits dest, and j-bit jump
+    // In A-instruction, the 15 bits other than the i-bit interpreted as a 15-bit constant
+
+    // dest = comp; jump
+    // 111A CCCCCC DDD JJJ
+    // instruction[0..2]: j3=0, j2=1, j1=2
+    // instruction[3..5]: d1=3, d2=4, d1=5
+    // instruction[6..11]: c6=6, c5=7, c4=8, c3=9, c2=10, c1=11
+
+
     PARTS:
-    // Put your code here:
+    // control signals to indicate if an A or C instruction is being executed
+    // 0 for A-instruction, 1 for C-instruction
+    Not(in=instruction[15], out=aInstruction);
+    Not(in=aInstruction, out=cInstruction);
+
+    // A-REGISTER
+    // if A-instructions OR C-instructions with d1 bit, load A register
+    And(a=cInstruction, b=instruction[4], out=outAinst);
+    Or(a=aInstruction, b=instruction[5], out=loadA);
+
+    Mux16(a=ALUout, b=instruction, sel=aInstruction, out=MuxI);
+    ARegister(in=MuxI, load=loadA, out=outA, out[0..14]=addressM);
+
+    // D-REGISTER
+    And(a=instruction[15], b=instruction[4], out=loadD);
+    DRegister(in=ALUout, load=loadD, out=outD);
+
+    // ALU
+    Mux16(a=outA, b=inM, sel=instruction[12], out=MuxAorM);
+    ALU(x=outD, y=MuxAorM, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], zr=zero, ng=negative, out=ALUout, out=outM);
+
+    // checks for ALU flags by handling the jumps
+    Not(in=negative, out=notNegative);
+    Not(in=zero, out=notZero);
+    And(a=notZero, b=notNegative, out=positive);
+
+    And(a=instruction[0], b=positive, out=greaterZero); // out>0/j0 bit
+    And(a=instruction[1], b=zero, out=zeroFlag);    // zero AND out=0/j2 bit
+    And(a=instruction[2], b=negative, out=negativeFlag);    // negative AND out<0/j1 bit
+
+    Or8Way(in[0]=greaterZero, in[1]=zeroFlag, in[2]=negativeFlag, out=jumper);
+    And(a=jumper, b=cInstruction, out=jump);
+
+    //Or(a=zeroFlag, b=negativeFlag, out=jmp1);
+    //Or(a=jmp1, b=greaterZero, out=jmp2);
+    //And(a=cInstruction, b=jmp2, out=jump);
+    
+    // writeM
+    And(a=instruction[15], b=instruction[3], out=writeM); // cInstruction and d1 bit
+
+    // outM
+    //And16(a=ALUout, b=true, out=outM);
+
+    // PC
+    PC(in=outA, load=jump, inc=true, reset=reset, out[0..14]=pc);
 }
