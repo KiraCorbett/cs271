@@ -78,7 +78,7 @@ class Parser
 
 			# if A_COMMAND and constant
 			if (commandType(line) == 'A_COMMAND') && (line.split('@')[1].to_i.to_s == line.split('@')[1])
-					line.to_s(2).rjust(16, '0')
+					line.strip.to_s(2).rjust(16, '0')
 					puts line
 					puts "add line"
 					# return (%015b % line)
