@@ -2,12 +2,9 @@
 
 class SymbolTable
 
-	# initializes new empty symbol table
 	def initialize
-		@symbols = Hash.new
-	end
-
-			SYMBOLS = {
+		@symbolsTable = {
+		  # "SP" => "0",
 		  'SP'   => 0,
 		  'LCL'  => 1,
 		  'ARG'  => 2,
@@ -35,13 +32,29 @@ class SymbolTable
 		  'KBD'    => 24576
 		}
 
-	# adds (symbol, address) pair to table
-	def addEntry(symbol, address)
-		symbols[symbol] = address
+		@currentSymbol = 16
 	end
+
+	def addEntry(symbol)
+		#if @symbolsTable(symbol)
+		#if @symbolsTable.contains(symbol)
+		if @symbolsTable[symbol]
+			@symbolsTable[symbol]
+		else
+			@symbolsTable[symbol] = @currentSymbol
+			@currentSymbol += 1
+			@symbolsTable[symbol]
+		end
+	end
+
+	# adds (symbol, address) pair to table
+	#def addEntry(symbol, address)
+		#return @symbols[symbol]
+	#	symbolsTable[symbol] = address
+	#end
 
 	# returns the address integer associated with symbol
 	def getAddress(symbol)
-		symbols.fetch(symbol)
+		@symbolsTable.fetch(symbol)
 	end
 end
