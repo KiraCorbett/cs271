@@ -7,34 +7,34 @@ load 'code.rb'
 class Parser
 
 @@computation = {
-		'0' => '101010',
-    '1' => '111111',
-   '-1' => '111010',
-    'D' => '001100',
-    'A' => '110000',
-   '!D' => '001101',
-   '!A' => '110001',
-   '-D' => '001111',
-   '-A' => '110011',
-  'D+1' => '011111',
-  'A+1' => '110111',
-  'D-1' => '001110',
-  'A-1' => '110010',
-  'D+A' => '000010',
-  'D-A' => '010011',
-  'A-D' => '000111',
-  'D&A' => '000000',
-  'D|A' => '010101',
-    'M' => '110000',
-   '!M' => '110001',
-   '-M' => '110011',
-  'M+1' => '110111',
-  'M-1' => '110010',
-  'D+M' => '000010',
-  'D-M' => '010011',
-  'M-D' => '000111',
-  'D&M' => '000000',
-  'D|M' => '010101'
+		'0' => '0101010',
+    '1' => '0111111',
+   '-1' => '0111010',
+    'D' => '0001100',
+    'A' => '0110000',
+   '!D' => '0001101',
+   '!A' => '0110001',
+   '-D' => '0001111',
+   '-A' => '0110011',
+  'D+1' => '0011111',
+  'A+1' => '0110111',
+  'D-1' => '0001110',
+  'A-1' => '0110010',
+  'D+A' => '0000010',
+  'D-A' => '0010011',
+  'A-D' => '0000111',
+  'D&A' => '0000000',
+  'D|A' => '0010101',
+    'M' => '1110000',
+   '!M' => '1110001',
+   '-M' => '1110011',
+  'M+1' => '1110111',
+  'M-1' => '1110010',
+  'D+M' => '1000010',
+  'D-M' => '1010011',
+  'M-D' => '1000111',
+  'D&M' => '1000000',
+  'D|M' => '1010101'
 	}
 
 	@@destination = {
@@ -75,27 +75,34 @@ class Parser
 			next if line.strip[0] == '/'
 			next if line.strip.empty?
 
+			string = ""
+
+			line.split(//).each do |character|
+				if character == '/'
+					break
+				else
+					string += character
+				end
+			end
+
+
 			# if A_COMMAND and constant
 			if ((commandType(line) == 'A_COMMAND') && (line.strip.split('@')[1].to_i.to_s == line.strip.split('@')[1]))
 					#line.to_s(2).rjust(16, '0')
 					#puts line.strip.split('@')[1].to_s.rjust(16, '0')
-					puts ("%015b" % line.strip.split('@')[1])
+					#puts ("%016b" % line.strip.split('@')[1])
 			elsif commandType(line) == 'A_COMMAND'
 				@table.addEntry(line)
-				puts "A COMMAND"
-			else
-				#puts binary(c(line), d(line), j(line))
-				puts c(line)
-				puts d(line)
+				#puts "A COMMAND"
+			elsif commandType(line) == 'C_COMMAND'
+				puts binary(c(string), d(string), j(string))
 				#puts ("%015b" % line.strip.split('@')[1])
-				puts "C COMMAND"
+				#puts "C COMMAND"
 			end
-
 			# number.to_s(2).rjust(16, '0')
 
-
-			puts line
-			puts commandType(line)
+			puts string
+			#puts commandType(line)
 		end
 	end
 
@@ -125,23 +132,25 @@ class Parser
 		if line.include?('=')
 			return @@computation[line.strip.split('=')[1]]
 		elsif line.include?(';')
-			return @@jump[line.strip.split(';')[0]]
+			return @@computation[line.strip.split(';')[0]]
 		else
-			'000000'
+			return '000000'
 		end
 	end
 
 	def d(line)
-		if line.include? '='
-			#@destination[line.split('=').first]
+		if line.include?('=')
 			return @@destination[line.strip.split('=')[0]]
+		else 
+			return '000'
 		end
 	end
 
 	def j(line)
-		if line.include? ';'
-			#@jump[line.split(';').last]
-		else
+		if line.include?(';')
+			# check this statement; might be an error
+			return @@jump[line.strip.split(';')[1]]
+		else 
 			return "000"
 		end
 	end	
