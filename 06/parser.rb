@@ -8,34 +8,34 @@ class Parser
 
 @computation = {
 	# "0" => "0101010",
-		'0' => 0101010,
-    '1' => 0111111,
-   '-1' => 0111010,
-    'D' => 0001100,
-    'A' => 0110000,
-   '!D' => 0001101,
-   '!A' => 0110001,
-   '-D' => 0001111,
-   '-A' => 0110011,
-  'D+1' => 0011111,
-  'A+1' => 0110111,
-  'D-1' => 0001110,
-  'A-1' => 0110010,
-  'D+A' => 0000010,
-  'D-A' => 0010011,
-  'A-D' => 0000111,
-  'D&A' => 0000000,
-  'D|A' => 0010101,
-    'M' => 1110000,
-   '!M' => 1110001,
-   '-M' => 1110011,
-  'M+1' => 1110111,
-  'M-1' => 1110010,
-  'D+M' => 1000010,
-  'D-M' => 1010011,
-  'M-D' => 1000111,
-  'D&M' => 1000000,
-  'D|M' => 1010101
+		'0' => '101010',
+    '1' => '111111',
+   '-1' => '111010',
+    'D' => '001100',
+    'A' => '110000',
+   '!D' => '001101',
+   '!A' => '110001',
+   '-D' => '001111',
+   '-A' => '110011',
+  'D+1' => '011111',
+  'A+1' => '110111',
+  'D-1' => '001110',
+  'A-1' => '110010',
+  'D+A' => '000010',
+  'D-A' => '010011',
+  'A-D' => '000111',
+  'D&A' => '000000',
+  'D|A' => '010101',
+    'M' => '110000',
+   '!M' => '110001',
+   '-M' => '110011',
+  'M+1' => '110111',
+  'M-1' => '110010',
+  'D+M' => '000010',
+  'D-M' => '010011',
+  'M-D' => '000111',
+  'D&M' => '000000',
+  'D|M' => '010101'
 	}
 
 	@destination = {
@@ -77,16 +77,16 @@ class Parser
 			next if line.strip.empty?
 
 			# if A_COMMAND and constant
-			if (commandType(line) == 'A_COMMAND') && (line.split('@')[1].to_i.to_s == line.split('@')[1])
-					line.strip.to_s(2).rjust(16, '0')
-					puts line
-					puts "add line"
-					# return (%015b % line)
+			if ((commandType(line) == 'A_COMMAND') && (line.strip.split('@')[1].to_i.to_s == line.strip.split('@')[1]))
+					#line.to_s(2).rjust(16, '0')
+					#puts line.strip.split('@')[1].to_s.rjust(16, '0')
+					puts ("%015b" % line.strip.split('@')[1])
 			elsif commandType(line) == 'A_COMMAND'
 				@table.addEntry(line)
 				puts "A COMMAND"
 			else
 				#puts binary(c(line), d(line), j(line))
+				puts c(line)
 				puts "C COMMAND"
 			end
 
@@ -97,6 +97,8 @@ class Parser
 			puts commandType(line)
 		end
 	end
+
+	# main_computation function for code.rb and store information variable
 
 	# If A command and just a number
   # 	convert number to binary
@@ -119,29 +121,29 @@ class Parser
 	# differentiate the comp and dest components
 	# if dest empty, remove '=', if comp empty, remove ';'
 	def c(line)
-		if line.include? '='
-			@computation[line.split('=').last]
-		elsif line.include? ';'
-			@jump[line.split(';').first]
+		if line.include?('=')
+			@computation[line.strip.split('=')]
+		elsif line.include?(';')
+			@jump[line.strip.split(';')]
 		end
 	end
 
 	def d(line)
 		if line.include? '='
-			@destination[line.split('=').first]
+			#@destination[line.split('=').first]
 		end
 	end
 
 	def j(line)
 		if line.include? ';'
-			@jump[line.split(';').last]
+			#@jump[line.split(';').last]
 		else
 			return "000"
 		end
 	end	
 
 	def binary(c, d, j)
-		puts "111"+c+d+j
+		return ("111"+c+d+j)
 	end
 
 end
