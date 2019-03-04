@@ -122,13 +122,13 @@ class Parser
 	# if dest empty, remove '=', if comp empty, remove ';'
 	def c(line)
 		if line.include?('=')
-			@@computation[line.split('=')[1]]
-			@@computation[line]
-			puts "cline"
+			return @@computation[line.strip.split('=')[1]]
+			#puts @@computation[line]
+			#puts "cline"
 		elsif line.include?(';')
-			@@jump[line.split(';')[0]]
-			@@jump[line]
-			puts "cline"
+			return @@jump[line.strip.split(';')[0]]
+			#puts @@jump[line]
+			#puts "cline"
 		else
 			'000000'
 		end
