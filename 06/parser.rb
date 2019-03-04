@@ -6,8 +6,7 @@ load 'code.rb'
 
 class Parser
 
-@computation = {
-	# "0" => "0101010",
+@@computation = {
 		'0' => '101010',
     '1' => '111111',
    '-1' => '111010',
@@ -38,26 +37,26 @@ class Parser
   'D|M' => '010101'
 	}
 
-	@destination = {
-    '0' => 000,
-    'M' => 001,
-    'D' => 010,
-   'MD' => 011,
-    'A' => 100,
-   'AM' => 101,
-   'AD' => 110,
-  'ADM' => 111
+	@@destination = {
+    '0' => '000',
+    'M' => '001',
+    'D' => '010',
+   'MD' => '011',
+    'A' => '100',
+   'AM' => '101',
+   'AD' => '110',
+  'ADM' => '111'
 	}
 
-@jump = {
-		'0' => 000,
-  'JGT' => 001,
-  'JEQ' => 010,
-  'JGE' => 011,
-  'JLT' => 100,
-  'JNE' => 101,
-  'JLE' => 110,
-  'JMP' => 111
+@@jump = {
+		'0' => '000',
+  'JGT' => '001',
+  'JEQ' => '010',
+  'JGE' => '011',
+  'JLT' => '100',
+  'JNE' => '101',
+  'JLE' => '110',
+  'JMP' => '111'
 }
 
   #symbolTable = symbol_table.new
@@ -87,6 +86,7 @@ class Parser
 			else
 				#puts binary(c(line), d(line), j(line))
 				puts c(line)
+				#puts ("%015b" % line.strip.split('@')[1])
 				puts "C COMMAND"
 			end
 
@@ -122,9 +122,15 @@ class Parser
 	# if dest empty, remove '=', if comp empty, remove ';'
 	def c(line)
 		if line.include?('=')
-			@computation[line.strip.split('=')]
+			@@computation[line.split('=')[1]]
+			@@computation[line]
+			puts "cline"
 		elsif line.include?(';')
-			@jump[line.strip.split(';')]
+			@@jump[line.split(';')[0]]
+			@@jump[line]
+			puts "cline"
+		else
+			'000000'
 		end
 	end
 
