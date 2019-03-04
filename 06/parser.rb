@@ -86,6 +86,7 @@ class Parser
 			else
 				#puts binary(c(line), d(line), j(line))
 				puts c(line)
+				puts d(line)
 				#puts ("%015b" % line.strip.split('@')[1])
 				puts "C COMMAND"
 			end
@@ -123,12 +124,8 @@ class Parser
 	def c(line)
 		if line.include?('=')
 			return @@computation[line.strip.split('=')[1]]
-			#puts @@computation[line]
-			#puts "cline"
 		elsif line.include?(';')
 			return @@jump[line.strip.split(';')[0]]
-			#puts @@jump[line]
-			#puts "cline"
 		else
 			'000000'
 		end
@@ -137,6 +134,7 @@ class Parser
 	def d(line)
 		if line.include? '='
 			#@destination[line.split('=').first]
+			return @@destination[line.strip.split('=')[0]]
 		end
 	end
 
