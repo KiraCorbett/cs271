@@ -4,7 +4,6 @@ class SymbolTable
 
 	def initialize
 		@symbolsTable = {
-		  # "SP" => "0",
 		  'SP'   => 0,
 		  'LCL'  => 1,
 		  'ARG'  => 2,
@@ -35,26 +34,28 @@ class SymbolTable
 		@currentSymbol = 16
 	end
 
-	def addEntry(symbol)
-		#if @symbolsTable(symbol)
-		#if @symbolsTable.contains(symbol)
+	def add_entry(symbol)
+		# if the symbol is already in the table, return the symbol
+		# else add the entry, increment by 1 when A or C insturction encountered
 		if @symbolsTable[symbol]
-			@symbolsTable[symbol]
+			return @symbolsTable[symbol]
 		else
 			@symbolsTable[symbol] = @currentSymbol
 			@currentSymbol += 1
-			@symbolsTable[symbol]
+			return @symbolsTable[symbol]
 		end
 	end
 
-	# adds (symbol, address) pair to table
-	#def addEntry(symbol, address)
-		#return @symbols[symbol]
-	#	symbolsTable[symbol] = address
-	#end
+	def add_label(label, address)
+		@symbolsTable[label] = address
+	end
 
 	# returns the address integer associated with symbol
 	def getAddress(symbol)
 		@symbolsTable.fetch(symbol)
+	end
+
+	def get_table()
+		return @symbolsTable
 	end
 end

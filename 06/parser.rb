@@ -65,16 +65,28 @@ class Parser
 	# prepares to parse file
 	def initialize(file)
 		@input_file = File.open(file)
+		@hack_file = File.open('Prog.hack', 'w')
 		@table = SymbolTable.new()
+		@the_array = []
 	end
 
 	# remove comments, blank lines, spaces
 	def parse()
 		@input_file.each do |line|
+			if commandType(line) == 'L_COMMAND'
+				line = line.gsub(/[()]/, "")
+				@table.add_label(line, $.)
+				#puts @table.get_table()
+			else
+				@the_array.push(line)
+			end
+		end
+
+		@the_array.each do |line|
 			next if line.strip[0] == '('
 			next if line.strip[0] == '/'
 			next if line.strip.empty?
-
+		
 			string = ""
 
 			line.split(//).each do |character|
@@ -85,24 +97,28 @@ class Parser
 				end
 			end
 
-
 			# if A_COMMAND and constant
 			if ((commandType(line) == 'A_COMMAND') && (line.strip.split('@')[1].to_i.to_s == line.strip.split('@')[1]))
 					#line.to_s(2).rjust(16, '0')
 					#puts line.strip.split('@')[1].to_s.rjust(16, '0')
-					#puts ("%016b" % line.strip.split('@')[1])
+					puts ("%016b" % line.strip.split('@')[1])
+					@hack_file.write(("%016b" % line.strip.split('@')[1]))
+					@hack_file.puts
 			elsif commandType(line) == 'A_COMMAND'
-				@table.addEntry(line)
-				#puts "A COMMAND"
+				puts ("%016b" % @table.add_entry(line.strip.split('@')[1]))
+				@hack_file.write(("%016b" % @table.add_entry(line.strip.split('@')[1])))
+				@hack_file.puts
 			elsif commandType(line) == 'C_COMMAND'
 				puts binary(c(string), d(string), j(string))
-				#puts ("%015b" % line.strip.split('@')[1])
-				#puts "C COMMAND"
+				@hack_file.write(binary(c(string), d(string), j(string)))
+				@hack_file.puts
+					#@hack_file.write(line)
 			end
 			# number.to_s(2).rjust(16, '0')
 
 			puts string
 			#puts commandType(line)
+    
 		end
 	end
 

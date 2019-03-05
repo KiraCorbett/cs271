@@ -2,6 +2,6 @@
 
 class Code
 
-# write to file
+
 
 end
