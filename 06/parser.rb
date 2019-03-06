@@ -65,24 +65,31 @@ class Parser
 	# prepares to parse file
 	def initialize(file)
 		@input_file = File.open(file)
-		@hack_file = File.open('Prog.hack', 'w')
+		@hack_file = File.open(file.split('.')[0] + '.hack', 'w')
 		@table = SymbolTable.new()
-		@the_array = []
+		@parsed_array = []
 	end
 
 	# remove comments, blank lines, spaces
 	def parse()
+
+		@incrementor = 0
+
 		@input_file.each do |line|
+			next if line.strip[0] == '/'
+			next if line.strip.empty?
+
 			if commandType(line) == 'L_COMMAND'
-				line = line.gsub(/[()]/, "")
-				@table.add_label(line, $.)
-				#puts @table.get_table()
+				line = line.strip.gsub(/[()]/, "")
+				@table.add_label(line, @incrementor)
 			else
-				@the_array.push(line)
+				@parsed_array.push(line)
+				@incrementor += 1
 			end
 		end
+		puts @table.get_table()
 
-		@the_array.each do |line|
+		@parsed_array.each do |line|
 			next if line.strip[0] == '('
 			next if line.strip[0] == '/'
 			next if line.strip.empty?
@@ -112,14 +119,14 @@ class Parser
 				puts binary(c(string), d(string), j(string))
 				@hack_file.write(binary(c(string), d(string), j(string)))
 				@hack_file.puts
-					#@hack_file.write(line)
 			end
 			# number.to_s(2).rjust(16, '0')
 
 			puts string
 			#puts commandType(line)
-    
 		end
+		puts @table.get_table()
+
 	end
 
 	# main_computation function for code.rb and store information variable
@@ -150,7 +157,7 @@ class Parser
 		elsif line.include?(';')
 			return @@computation[line.strip.split(';')[0]]
 		else
-			return '000000'
+			return '0000000'
 		end
 	end
 

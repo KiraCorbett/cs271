@@ -37,7 +37,7 @@ class SymbolTable
 	def add_entry(symbol)
 		# if the symbol is already in the table, return the symbol
 		# else add the entry, increment by 1 when A or C insturction encountered
-		if @symbolsTable[symbol]
+		if @symbolsTable.has_key?(symbol)
 			return @symbolsTable[symbol]
 		else
 			@symbolsTable[symbol] = @currentSymbol
