@@ -7,7 +7,7 @@ load 'code.rb'
 class Parser
 
 @@computation = {
-		'0' => '0101010',
+	'0' => '0101010',
     '1' => '0111111',
    '-1' => '0111010',
     'D' => '0001100',
@@ -37,7 +37,7 @@ class Parser
   'D|M' => '1010101'
 	}
 
-	@@destination = {
+@@destination = {
     '0' => '000',
     'M' => '001',
     'D' => '010',
@@ -49,7 +49,7 @@ class Parser
 	}
 
 @@jump = {
-		'0' => '000',
+    '0' => '000',
   'JGT' => '001',
   'JEQ' => '010',
   'JGE' => '011',
@@ -59,10 +59,6 @@ class Parser
   'JMP' => '111'
 }
 
-  #symbolTable = symbol_table.new
-  #coder = code.new
-
-	# prepares to parse file
 	def initialize(file)
 		@input_file = File.open(file)
 		@hack_file = File.open(file.split('.')[0] + '.hack', 'w')
@@ -70,15 +66,18 @@ class Parser
 		@parsed_array = []
 	end
 
-	# remove comments, blank lines, spaces
 	def parse()
 
+		# keeps track of label's position
 		@incrementor = 0
 
+		# iterates through each line to process labels
 		@input_file.each do |line|
 			next if line.strip[0] == '/'
 			next if line.strip.empty?
 
+			# if it is a label, strip it and add it to the symbol table
+			# else push it to an array for later and increment 
 			if commandType(line) == 'L_COMMAND'
 				line = line.strip.gsub(/[()]/, "")
 				@table.add_label(line, @incrementor)
@@ -87,8 +86,8 @@ class Parser
 				@incrementor += 1
 			end
 		end
-		puts @table.get_table()
 
+		# iterate to remove comments, whitespace, etc.
 		@parsed_array.each do |line|
 			next if line.strip[0] == '('
 			next if line.strip[0] == '/'
@@ -104,10 +103,8 @@ class Parser
 				end
 			end
 
-			# if A_COMMAND and constant
+			# check if A_COMMAND & CONSTANT, A_COMMAND, OR C_COMMAND and write to hack file
 			if ((commandType(line) == 'A_COMMAND') && (line.strip.split('@')[1].to_i.to_s == line.strip.split('@')[1]))
-					#line.to_s(2).rjust(16, '0')
-					#puts line.strip.split('@')[1].to_s.rjust(16, '0')
 					puts ("%016b" % line.strip.split('@')[1])
 					@hack_file.write(("%016b" % line.strip.split('@')[1]))
 					@hack_file.puts
@@ -120,23 +117,11 @@ class Parser
 				@hack_file.write(binary(c(string), d(string), j(string)))
 				@hack_file.puts
 			end
-			# number.to_s(2).rjust(16, '0')
 
 			puts string
-			#puts commandType(line)
 		end
-		puts @table.get_table()
 
 	end
-
-	# main_computation function for code.rb and store information variable
-
-	# If A command and just a number
-  # 	convert number to binary
-  # elsif A command and symbol
-  # 	throw symbol through symbol table and convert resulting number to binary
-	# elsif C command
-  # => do c command stuff
 
 	# returns type of command
 	def commandType(line)
