@@ -46,6 +46,7 @@ class SymbolTable
 		end
 	end
 
+	# adds label as entry to symbol table
 	def add_label(label, address)
 		@symbolsTable[label] = address
 	end
@@ -55,6 +56,7 @@ class SymbolTable
 		@symbolsTable.fetch(symbol)
 	end
 
+	# for debugging to print out current values in symbol table
 	def get_table()
 		return @symbolsTable
 	end
