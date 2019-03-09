@@ -27,7 +27,7 @@ class SymbolTable
 		  'R14' => 14,
 		  'R15' => 15,
 
-		  'SCREEN' => 24575,
+		  'SCREEN' => 16384,
 		  'KBD'    => 24576
 		}
 
